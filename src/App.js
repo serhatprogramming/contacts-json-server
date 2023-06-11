@@ -28,11 +28,17 @@ const App = () => {
   };
 
   const handleDelete = (contactToBeDeleted) => {
-    contactServices.removeContact(contactToBeDeleted).then(() => {
-      setContacts(
-        contacts.filter((contact) => contact.id !== contactToBeDeleted.id)
-      );
-    });
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${contactToBeDeleted.name}?`
+      )
+    ) {
+      contactServices.removeContact(contactToBeDeleted).then(() => {
+        setContacts(
+          contacts.filter((contact) => contact.id !== contactToBeDeleted.id)
+        );
+      });
+    }
   };
 
   return (
