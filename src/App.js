@@ -18,7 +18,23 @@ const App = () => {
     if (newName.trim() !== "") {
       const newContact = { name: newName, email: newEmail };
       if (contacts.find((contact) => contact.name === newName)) {
-        alert(`${newName} is already in contacts`);
+        if (
+          window.confirm(
+            `${newName} is already in contacts. Do you want to update the email as ${newEmail}`
+          )
+        ) {
+          const oldContact = contacts.find(
+            (contact) => contact.name === newName
+          );
+          const updatedContact = { ...oldContact, email: newEmail };
+          contactServices.updateContact(updatedContact).then((contact) => {
+            setContacts(
+              contacts.map((contact) =>
+                contact.id === oldContact.id ? updatedContact : contact
+              )
+            );
+          });
+        }
       } else {
         contactServices.addContact(newContact).then((contact) => {
           setContacts([...contacts, contact]);

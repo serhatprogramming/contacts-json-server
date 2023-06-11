@@ -16,5 +16,10 @@ const removeContact = async (newContact) => {
   return response.data;
 };
 
+const updateContact = async (newContact) => {
+  const response = await axios.put(`${API_URL}/${newContact.id}`, newContact);
+  return response.data;
+};
+
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { getContacts, addContact, removeContact };
+export default { getContacts, addContact, removeContact, updateContact };
