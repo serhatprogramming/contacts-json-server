@@ -5,8 +5,11 @@ import ContactList from "./components/ContactList";
 
 import contactServices from "./services/contacts";
 
+import Notification from "./components/Notification";
+
 const App = () => {
   const [contacts, setContacts] = useState([]);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     contactServices.getContacts().then((retrievedContacts) => {
@@ -34,11 +37,16 @@ const App = () => {
               )
             );
           });
+          notify(
+            "warning",
+            `${newName}'s email updated successfully as ${newEmail}`
+          );
         }
       } else {
         contactServices.addContact(newContact).then((contact) => {
           setContacts([...contacts, contact]);
         });
+        notify("information", `${newName} added successfully`);
       }
     }
   };
@@ -49,16 +57,36 @@ const App = () => {
         `Are you sure you want to delete ${contactToBeDeleted.name}?`
       )
     ) {
-      contactServices.removeContact(contactToBeDeleted).then(() => {
-        setContacts(
-          contacts.filter((contact) => contact.id !== contactToBeDeleted.id)
-        );
-      });
+      contactServices
+        .removeContact(contactToBeDeleted)
+        .then(() => {
+          setContacts(
+            contacts.filter((contact) => contact.id !== contactToBeDeleted.id)
+          );
+          notify("warning", `${contactToBeDeleted.name} deleted successfully`);
+        })
+        .catch((error) => {
+          notify(
+            "error",
+            `Error deleting ${contactToBeDeleted.name}. It was already removed`
+          );
+          setContacts(
+            contacts.filter((contact) => contact.id !== contactToBeDeleted.id)
+          );
+        });
     }
+  };
+
+  const notify = (type, message) => {
+    setNotification({ type, message });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
   };
 
   return (
     <div className="contacts-app">
+      <Notification notification={notification} />
       <AddContact handleSubmit={handleSubmit} />
       <ContactList contacts={contacts} deleteContact={handleDelete} />
     </div>
